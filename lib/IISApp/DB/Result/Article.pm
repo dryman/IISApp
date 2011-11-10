@@ -8,7 +8,7 @@ __PACKAGE__->add_columns(
   snipet =>   +{qw|data_type text                  |},
   url =>      +{qw|data_type text     is_nullable 0|},
   cluster =>  +{qw|data_type integer  is_nullable 0|},
-  finished => +{qw|data_type boolean  is_Nullable 0|},
+  finished => +{qw|data_type boolean  is_nullable 0|},
 );
 
 __PACKAGE__->set_primary_key('id');
