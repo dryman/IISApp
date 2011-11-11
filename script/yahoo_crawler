@@ -1,0 +1,12 @@
+#!/usr/bin/env perl
+use common::sense;
+use autodie;
+use Mojo::UserAgent;
+
+my $base_url = "http://tw.news.yahoo.com/archive/";
+my @urls = map {"$base_url$_.html"} 1..10;
+
+my $ua = Mojo::UserAgent->new();
+$ua->get($_)->res
+  ->dom('h4 > a')
+  ->each(sub{say $_->text}) for @urls;
