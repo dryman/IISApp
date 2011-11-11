@@ -9,6 +9,7 @@ __PACKAGE__->add_columns(
   set_id =>   +{qw|data_type integer  is_nullable 0 is_foreign_key 1|},
 );
 __PACKAGE__->set_primary_key('id');
+__PACKAGE__->add_unique_constraint(['ptt']);
 __PACKAGE__->has_many(qw|time_stamps IISApp::DB::Result::TimeStamp user_id|);
 __PACKAGE__->has_many(
   random_nums => 'IISApp::DB::Result::RandomSet',
