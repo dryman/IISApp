@@ -13,7 +13,8 @@ __PACKAGE__->has_many(qw|time_stamps IISApp::DB::Result::TimeStamp user_id|);
 __PACKAGE__->has_many(
   random_nums => 'IISApp::DB::Result::RandomSet',
   {'foreign.set_id','self.set_id'},
-  {ordered_by => {-desc => 'ord'}},
+  # {ordered_by => {-asc => 'foreign.ord'}},
+  # it cannot be ordered by foreign values...
 );
 
 1;
