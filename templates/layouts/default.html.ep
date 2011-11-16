@@ -38,15 +38,7 @@
 <body>
 
   <div id="container">
-    <header>
-
-    </header>
-    <div id="main" role="main">
       <%= content %>
-    </div>
-    <footer>
-
-    </footer>
   </div> <!--! end of #container -->
 
 
@@ -64,12 +56,12 @@
 
 	
   <!-- Change UA-XXXXX-X to be your site's ID -->
-  <script>
+  <!--script>
     window._gaq = [['_setAccount','UAXXXXXXXX1'],['_trackPageview'],['_trackPageLoadTime']];
     Modernizr.load({
       load: ('https:' == location.protocol ? '//ssl' : '//www') + '.google-analytics.com/ga.js'
     });
-  </script>
+  </script-->
 
 
   <!-- Prompt IE 6 users to install Chrome Frame. Remove this if you want to support IE 6.

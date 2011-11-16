@@ -1,9 +1,19 @@
 % layout 'default';
-% title 'My Index';
-This page was generated from the template
-"templates/example/welcome.html.ep" and the layout
-"templates/layouts/default.html.ep",
+% title 'Crowdsourcing Project';
+<header>
+
+</header>
+<aside>
+</aside>
+<div id="main" role="main">
+
 <a href="<%== url_for %>">click here</a>
 to reload the page or
 <a href="/index.html">here</a>
 to move forward to a static page.
+
+</div>
+<div class="clearer"></div>
+<footer>
+  <div class="footer">hello world</div>
+</footer>
