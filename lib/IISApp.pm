@@ -18,6 +18,7 @@ sub startup {
 
   # Normal route to controller
   $r->route('/welcome')->to('example#welcome');
-}
+  $r->any('/'=>sub{},'index');
 
+}
 1;
