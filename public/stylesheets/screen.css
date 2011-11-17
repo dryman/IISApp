@@ -78,7 +78,22 @@ body {
     height: 240px;
     margin-bottom: 0;
     position: relative; }
-  /* line 27, ../../sass/screen.sass */
+    /* line 27, ../../sass/screen.sass */
+    #container header h1 {
+      color: #004d0c;
+      position: relative;
+      margin: 0;
+      padding: 150px 40px 0px 250px;
+      font-size: 26px;
+      text-align: center; }
+    /* line 34, ../../sass/screen.sass */
+    #container header h2 {
+      color: #1b120c;
+      margin: 0;
+      padding: 25px 40px 0px 250px;
+      text-align: center;
+      font-size: 18px; }
+  /* line 41, ../../sass/screen.sass */
   #container aside {
     background: url(/img/side-bar.jpeg) no-repeat 0px 0px;
     float: left;
@@ -89,18 +104,29 @@ body {
     margin: 0;
     padding: 0;
     z-index: 10; }
-  /* line 38, ../../sass/screen.sass */
+    /* line 52, ../../sass/screen.sass */
+    #container aside p {
+      padding: 1em 0px 0px 25px; }
+  /* line 55, ../../sass/screen.sass */
   #container #main {
     margin: 0px 0px 0px 200px;
-    padding: 0px; }
-  /* line 42, ../../sass/screen.sass */
+    padding: 0px;
+    font-size: 14px; }
+    /* line 60, ../../sass/screen.sass */
+    #container #main #content {
+      padding: 27px;
+      color: #252525; }
+      /* line 63, ../../sass/screen.sass */
+      #container #main #content p {
+        padding: 1em; }
+  /* line 66, ../../sass/screen.sass */
   #container .clearer {
     clear: both; }
-  /* line 46, ../../sass/screen.sass */
+  /* line 70, ../../sass/screen.sass */
   #container footer {
     margin: 0;
     padding: 0; }
-    /* line 50, ../../sass/screen.sass */
+    /* line 74, ../../sass/screen.sass */
     #container footer .footer {
       background: no-repeat center url(/img/paper-bottom.jpeg);
       height: 114px; }
