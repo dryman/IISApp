@@ -18,6 +18,7 @@ sub startup {
 
   # Normal route to controller
   $r->route('/welcome')->to('example#welcome');
+  $r->route('/login')->to('entry#login')->name('login');
   $r->any('/'=>sub{},'index');
 
 }
@@ -44,7 +45,7 @@ frameworks including L<Mojolicious> adopt this pattern.
 The Controller is L<Mojolicious> it's self, the basic syntax is:
 
     $r = Mojolicous::Routes->new; # or, $r=$self->routes;
-    $r->route('/article')->to('Controller#action');
+    $r->route('/article')->to('Controller#action')->name('action');
 
 Then, in the lib/IISApp/Controller.pm file, you can add some methods to handle
 the action.
