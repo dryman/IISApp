@@ -20,7 +20,7 @@ frameworks including [Mojolicious](http://search.cpan.org/perldoc?Mojolicious) a
 The Controller is [Mojolicious](http://search.cpan.org/perldoc?Mojolicious) it's self, the basic syntax is:
 
     $r = Mojolicous::Routes->new; # or, $r=$self->routes;
-    $r->route('/article')->to('Controller#action');
+    $r->route('/article')->to('Controller#action')->name('action');
 
 Then, in the lib/IISApp/Controller.pm file, you can add some methods to handle
 the action.
