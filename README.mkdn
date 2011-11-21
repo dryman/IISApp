@@ -1,37 +1,13 @@
-package IISApp;
-use strict;
-use 5.010;
-our $VERSION = "0.002";
-
-use IISApp::DB;
-use Mojo::Base 'Mojolicious';
-
-# This method will run once at server start
-sub startup {
-  my $self = shift;
-
-  # Documentation browser under "/perldoc" (this plugin requires Perl 5.10)
-  $self->plugin('PODRenderer');
-
-  # Routes
-  my $r = $self->routes;
-
-  # Normal route to controller
-  $r->route('/welcome')->to('example#welcome');
-  $r->any('/'=>sub{},'index');
-
-}
-
-=head1 NAME 
+# NAME 
 
 IISApp main controller
 
-=head1 Overview
+# Overview
 
-Perl L<Mojolicious> framework is designed for MVC (Model, View, Controller)
+Perl [Mojolicious](http://search.cpan.org/perldoc?Mojolicious) framework is designed for MVC (Model, View, Controller)
 software architectural pattern. MVC was originally desigined for GUI interface
 that seperates application logic, presentation and input. Now most modern web
-frameworks including L<Mojolicious> adopt this pattern.
+frameworks including [Mojolicious](http://search.cpan.org/perldoc?Mojolicious) adopt this pattern.
 
                 .----------------.     .-------.
     Request  -> |                | <-> | Model |
@@ -41,7 +17,7 @@ frameworks including L<Mojolicious> adopt this pattern.
     Response <- |                | <-> | View  |
                 '----------------'     '-------'
 
-The Controller is L<Mojolicious> it's self, the basic syntax is:
+The Controller is [Mojolicious](http://search.cpan.org/perldoc?Mojolicious) it's self, the basic syntax is:
 
     $r = Mojolicous::Routes->new; # or, $r=$self->routes;
     $r->route('/article')->to('Controller#action');
@@ -79,9 +55,4 @@ Last, in lib/IISApp/Templates/controller/action.html.ep
       <div class="footer"></div>
     </footer>
 
-The Model is described in L<IISApp::DB>. Check the documents there.
-
-=cut
-
-1;
-__END__
+The Model is described in [IISApp::DB](http://search.cpan.org/perldoc?IISApp::DB). Check the documents there.

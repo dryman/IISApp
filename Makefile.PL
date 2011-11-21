@@ -12,4 +12,6 @@ requires  'Mojolicious' => 2.26;
 test_requires 'Test::More' => 0.42;
 test_requires 'Test::DBIx::Class' => 0.25;
 
+readme_markdown_from 'lib/IISApp.pm';
+
 WriteAll;
