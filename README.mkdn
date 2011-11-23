@@ -56,3 +56,264 @@ Last, in lib/IISApp/Templates/controller/action.html.ep
     </footer>
 
 The Model is described in [IISApp::DB](http://search.cpan.org/perldoc?IISApp::DB). Check the documents there.
+
+# Notes on Mojolicous
+
+Just a reading note for Perl Mojolicous framework
+
+# Foundamentals of Modern Web Framework concerns
+
+Most notes are copied from Mojolicous::Guides::Growing
+
+## REpresentational State Transfer
+
+The fundamental idea here is that all resources are uniquely addressable with
+URLs and every resource can have different representations such as HTML, RSS or
+JSON. User interface concerns are separated from data storage concerns and all
+session state is kept client-side.
+
+    .---------.                        .------------.
+    |         | ->    PUT /foo      -> |            |
+    |         | ->    Hello world!  -> |            |
+    |         |                        |            |
+    |         | <-    201 CREATED   <- |            |
+    |         |                        |            |
+    |         | ->    GET /foo      -> |            |
+    | Browser |                        | Web Server |
+    |         | <-    200 OK        <- |            |
+    |         | <-    Hello world!  <- |            |
+    |         |                        |            |
+    |         | ->    DELETE /foo   -> |            |
+    |         |                        |            |
+    |         | <-    200 OK        <- |            |
+    '---------'                        '------------'
+
+## Sessions
+
+HTTP was designed as a stateless protocol, web servers don't know anything about
+previous requests, which makes user friendly login systems very tricky. Sessions
+solve this problem by allowing web applications to keep stateful information
+across several HTTP requests.
+
+    GET /login?user=sri&pass=s3cret HTTP/1.1
+      Host: mojolicio.us
+    
+
+      HTTP/1.1 200 OK
+      Set-Cookie: sessionid=987654321
+      Content-Length: 10
+      Hello sri.
+    
+
+      GET /protected HTTP/1.1
+      Host: mojolicio.us
+      Cookie: $Version=1; sessionid=987654321
+    
+
+      HTTP/1.1 200 OK
+      Set-Cookie: sessionid=987654321
+      Content-Length: 16
+      Hello again sri.
+
+
+
+The notes below are simply some snapshots jump into my head
+
+# Controller
+
+## param method
+
+The param method of our Mojolicious::Controller instance is used to access 
+
+- query parameters `/?user=sir&passwd=secr3t`
+- POST parameters  
+- route placeholders `/:name`
+
+all at once.
+
+    my $user = $self->param('user') || '';
+
+
+
+## helper method
+A simple helper function can be registered with the helper method of Mojolicious
+to make our model available to all actions and templates.
+
+    helper users => sub { return $users };
+
+## flash
+
+    # get message from flash
+    my $foo   = $c->flash('foo');
+    # store message into flash
+    $c        = $c->flash({foo => 'bar'});
+    $c        = $c->flash(foo => 'bar');
+    $c->redirect_to('next_action');
+
+Data storage persistent only for the next request, stored in the session.
+
+    % if (my $message = flash 'message') {
+      <b><%= $message %></b><br>
+    % }
+    # getting message out from flash command
+
+## State keeping
+
+Sessions in Mojolicious pretty much just work out of the box and there is no
+setup required, but we suggest using a more secure secret passphrase.  This
+passphrase is used by the HMAC-MD5 algorithm to make signed cookies secure and
+can be changed at any time to invalidate all existing sessions.
+
+    $self->session(user => 'sri');
+    my $user = $self->session('user');
+
+By default all sessions expire after one hour, for more control you can also use
+the expires session value to set the expiration date to a specific time in epoch
+seconds.
+
+    $self->session(expires => time + 3600);
+
+And the whole session can be deleted by setting an expiration date in the past.
+
+    $self->session(expires => 1);
+
+For data that should only be visible on the next request, like a confirmation
+message after a 302 redirect, you can use the flash.
+
+    $self->flash(message => 'Everything is fine.');
+    $self->redirect_to('goodbye');
+
+Just remember that everything is stored in HMAC-MD5 signed cookies, so there is
+usually a 4096 byte limit, depending on the browser.
+
+
+
+# Test::Mojo
+
+    $t->get_ok('/')->status_is(200)
+        ->element_exists('form input[name="user"]')
+        ->element_exists('form input[name="pass"]')
+        ->element_exists('form input[type="submit"]');
+    
+
+      # Test login with valid credentials
+      $t->post_form_ok('/' => {user => 'sri', pass => 'secr3t'})
+        ->status_is(200)->text_like('html body' => qr/Welcome sri/);
+
+# Routing
+
+* Generic placeholders
+
+Generic placeholders are the simplest form of placeholders and match all
+characters except `/` and `.`.
+
+    /sebastian/hello    -> /:name/hello -> {name => 'sebastian'}
+    /sebastianhello    -> /(:name)hello -> {name => 'sebastian'}
+
+* Wildcard placeholders
+
+Wildcard placeholders are just like generic placeholders, but match absolutely
+everything.
+
+    /sebastian/23/hello -> /*name/hello -> {name => 'sebastian/23'}
+    /sebastian.23/hello -> /*name/hello -> {name => 'sebastian.23'}
+    /sebastian/hello    -> /*name/hello -> {name => 'sebastian'}
+
+* Relaxed placeholders
+
+Relaxed placeholders are similar to the two placeholders above, but always
+require parentheses and match all characters except `/`.
+
+    /sebastian/23/hello -> /(.name)/hello -> undef
+    /sebastian.23/hello -> /(.name)/hello -> {name => 'sebastian.23'}
+
+## basic routing
+
+Routes are usually configured in the startup method of the application class,
+but the router **can be accessed from everywhere** (even at runtime).
+
+    sub startup {
+       my $self = shift;
+       my $r = $self->routes;
+       $r->route('/welcome')->to(controller => 'foo', action => 'welcome');
+     }
+
+## Stash
+
+The generated hash of a matching route is actually the center of the whole
+Mojolicious request cycle. We call it the stash, and it _persists until a
+response has been generated_.
+
+    $r->route('/bye')->to(
+      controller => 'foo', 
+      action => 'bye',
+      mymessage => 'Bye'
+    );
+
+There are a few stash values with special meaning, such as **controller** and
+**action**, but you can generally fill it with whatever data you need to generate a
+response. Once dispatched the whole stash content can be changed at any time.
+
+    $self->stash(mymessage);
+    # 'Bye'
+    $self->stash(mymessage => 'Welcome');
+    #Change message in stash
+
+## Nested routes
+
+It is also possible to build tree structures from routes to remove repetitive code. A route with children can't match on it's own though, only the actual endpoints of these nested routes can.
+
+    # /foo     -> undef
+    # /foo/bar -> {controller => 'foo', action => 'bar'}
+    my $foo = $r->route('/foo')->to(controller => 'foo');
+    $foo->route('/bar')->to(action => 'bar');
+
+The stash is simply inherited from route to route and newer values override old ones.
+
+    # /foo     -> undef
+    # /foo/abc -> undef
+    # /foo/bar -> {controller => 'foo', action => 'bar'}
+    # /foo/baz -> {controller => 'foo', action => 'baz'}
+    # /foo/cde -> {controller => 'foo', action => 'abc'}
+    my $foo = $r->route('/foo')->to(controller => 'foo', action => 'abc');
+    $foo->route('/bar')->to(action => 'bar');
+    $foo->route('/baz')->to(action => 'baz');
+    $foo->route('/cde');
+
+## Some convensions
+
+    # Foo->bye
+    $r->route('/bye')->to('foo#bye',mymessage => 'Bye');
+    # Foo::Bar->bye
+    $r->route('/bye')->to('foo-bar#bye',mymessage => 'Bye');
+    $r->route('/bye')
+      ->to(namesapce => 'Foo::Bar', action => 'bye');
+
+## Callback
+
+    $r->route('/bye')->to(cb => sub {
+        my $self = shift;
+        $self->render(text => 'Good bye.');
+      });
+
+## Placeholders and stash value
+
+    # /bye -> {controller => 'foo', action => 'bar', mymessage => 'bye'}
+    # /hey -> {controller => 'foo', action => 'bar', mymessage => 'hey'}
+    # / -> {controller => 'foo', action => 'bar', mymessage => 'hi'}
+    $r->route('/:mymessage')
+      ->to(controller => 'foo', action => 'bar', mymessage => 'hi');
+
+Extracted placeholder values will simply redefine older stash values if they
+already exist. One more interesting effect, if a placeholder is at the end of a
+route and there is already a stash value of the same name present, it
+automatically becomes optional.
+
+This is also the case if multiple placeholders are right after another and not
+separated by other characters than `/`.
+
+    # /           -> {controller => 'foo',   action => 'bar'}
+    # /users      -> {controller => 'users', action => 'bar'}
+    # /users/list -> {controller => 'users', action => 'list'}
+    $r->route('/:controller/:action')
+      ->to(controller => 'foo', action => 'bar');
